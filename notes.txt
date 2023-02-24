@@ -1,0 +1,12 @@
+ //import  the file reading path
+ const fs =require ("fs")
+ const [configPath]=process.argv
+
+// alternate method for file readind
+// (err,data) is a call back function
+
+
+ fs.readFile(configPath,"utf-8",(err,data)=>{
+
+     console.log(data)
+ })
