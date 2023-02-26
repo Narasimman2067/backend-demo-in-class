@@ -1,110 +1,144 @@
-// // HERE THE process.argv is a global function to get the data and to 
-// // process the data
 
-const fs =require ("fs");
-const os =require ("os");
-// const { monitorEventLoopDelay } = require("perf_hooks");
-const[, , num1,num2, msg, configPath]=process.argv;
+const express = require("express");
+// invoke that server as a app
+const app =express();
+const PORT =9000;
+const path =require("path");
+const fs =require("fs")
 
-const sum =(n1,n2)=>n1+n2;
-console.log(sum(+num1,+num2));
-const welcome =(message)=>{
-    console.log(`Hi ${message} welcome to node js`)
-}
-welcome(msg)
 
- // file reading
-fs.readFile("./sample.txt","utf-8",(err,data)=>{
-try {
-    console.log("file read succesfully")
-} catch (error) {
-    console.log(error)
-}
-   
-    console.log(data)
-})
-
-const content ="make a new file using node path"
-// // create a new file for writting
-fs.writeFile("./newFile.txt",content,(err)=>{
+const currentDir=path.join(__dirname,"express");
+console.log(currentDir)
+const content ="hi i have created current directory file"
+fs.writeFile(`${currentDir}/express.txt`, content,(err)=>{
     try {
-        console.log("file write succesfully")
+        console.log("succesfully file created")
     } catch (error) {
-        console.log("error ehile written")
+     console.log("file not created")   
     }
+}
+)
+// // middleware tell to use
+app.use(express.static("express")); //loading the static file
+app.use(express.json());
 
-
-    // if(err){
-    //     console.log(err)
-    // }else{
-    //     console.log("file Written succesfully")
-    // }
+app.get("/static",(req,res)=>{
+    res.sendFile(path.join("__dirname,express/express.txt"))
 })
 
-const newContent = "\n new content added"
-// update the file
+const students =[
+    {
+        "name": "Narasimman",
+        "batch": "B42wd",
+        "gender": "male",
+        "yearsOfExperience": "1",
+        "id": "1"
+       },
+       {
+        "name": "raja",
+        "batch": "B42wd",
+        "gender": "male",
+        "yearsOfExperience": "1",
+        "id": "2"
+       },
+       {
+        "name": "rathnam",
+        "batch": "B42wd",
+        "gender": "male",
+        "yearsOfExperience": "1",
+        "id": "3"
+       },
+       {
+        "name": "sandya",
+        "batch": "B42wd",
+        "gender": "female",
+        "yearsOfExperience": "1",
+        "id": "4"
+       }
 
-fs.appendFile("./newFile.txt",newContent,(err)=>{
-    try {
-        console.log("file update succesfully")
-    } catch (error) {
-        console.log("error ocured while update")
-    }
+
+]
+
+// example for get
+
+app.get("/",(req,res) =>{
+// parameter any
+res.send("hello i am start the server")
 })
 
-// delete a function
-// fs.unlink("./sample.txt",(err)=>{
-// try {
-//     console.log("file delete succesfully")
-// } catch (error) {
-//     console.log("error occured while delete")
-// }
+// -------------------------------------------------------------------
 
-// })
-// whenever its required use sync operation
-// but neccessary in production time
-// readFilesync,writeFilesync,
-// arrange the file in order to sync
+// use parameter get the data
+
+app.get("/students/:id",(req,res)=>{
+    const {id}=req.params;
+    console.log(id);
+    console.log(req.params)
+    // use find key word instead of filter to remove string
+    const student =students.find((stud)=> stud.id === id)
+    res.send(student)
+})
+
+// ------------------------------------------------------------
+
+// to get all datas
+
+app.get("/all/students",(req,res)=>{
+res.send(students)
+
+})
 
 
-// fs.unlinkSync("./sample.txt",(err)=>{
-//     try {
-//         console.log("file orderly sync succesfully")
-//     } catch (error) {
-//         console.log("error occured while ordering")
-//     }
+// --------------------------------------------------------------
+// to get the data using the queryy details
+// end point creatiion 
+// Query=>  http://localhost:9000/students?name=raja
+app.get("/students",(req,res)=>{
+    const {name}=req.query
+    console.log(req.query)
+    const selected1=students .find((stud)=>stud.name == name) 
+    // const selected=students.filter((studs)=>studs.gender == gender)   
+    res.send(selected1)
+    // res.send(selected)
+
     
-//     })
+    })
+// post request
 
-// to read a whole directory
 
-fs.readdir("./",(err,directory)=>{
-    try {
-        console.log("Directory",directory)
-    } catch (error) {
-        console.log(error)
-        
-    }
+
+app.post("/students",(req,res)=>{
+    const data =
+        {
+            name: req.body.name,
+            batch: req.body.batch,
+            gender: req.body.gender,
+            yearsOfExperience: req.body.yearsOfExperience,
+            id: req.body.id,
+           }
+    
+students.push(data)
+res.send(students)
+
 })
 
-// to see the os version of our windows
+// server generating code
 
-console.log("Os version------",os.version());
-console.log("Free Memory------",os.freemem());
-console.log("Total Memory------",os.totalmem());
-console.log("CPU------",os.cpus());
+app.listen(PORT,()=>console.log(`server started suceesfully localhost:${PORT}`))
 
-// date and time extra knowledge things
+// -------------------------------------------------------------------------------
 
-let time =Date.now()
-console.log(time)
-let date =new Date();
-let utc =date.toUTCString();
-let today =date.getDate();
-let month =date.getMonth();
-let year =date.getUTCFullYear();
-console.log("date",date);
-console.log("utc",utc)
-console.log("all functions are :",date,utc,today,month,year)
 
-// task
+
+
+
+
+
+
+
+
+
+
+
+
+
