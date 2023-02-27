@@ -1,4 +1,4 @@
-
+const {mongoClient, MongoClient} =require ("mongodb")
 const express = require("express");
 // invoke that server as a app
 const app =express();
@@ -18,12 +18,31 @@ fs.writeFile(`${currentDir}/express.txt`, content,(err)=>{
     }
 }
 )
+
+// mongo db connection string
+const MONGO_URL = "mongodb://127.0.0.1:27017/products"
+const client =new MongoClient(MONGO_URL)  
+// const dbName = "products";
+async  function createConnection(){
+ 
+ await client.connect();
+ console.log("mongodb is succesfully connected")
+//  const db = client.db(dbName);
+//  const collection = db.collection('products');
+ return client;
+}
+createConnection()
+.then(()=>console.log("success"))
+.catch(()=>console.log("error"))
+
+
+
 // // middleware tell to use
 app.use(express.static("express")); //loading the static file
 app.use(express.json());
 
 app.get("/static",(req,res)=>{
-    res.sendFile(path.join("__dirname,express/express.txt"))
+    res.sendFile(path.join(__dirname,"express/express.txt"))
 })
 
 const students =[
@@ -119,6 +138,38 @@ app.post("/students",(req,res)=>{
     
 students.push(data)
 res.send(students)
+
+})
+
+// put 
+
+app.put("/students/:id",(req,res)=>{
+    const {id}=req.params
+    const editStudents=students.find((stud)=>stud.id === id)
+    editStudents.name=req.body.name,
+    editStudents.batch= req.body.batch,
+    editStudents.gender=req.body.gender,
+    editStudents.yearsOfExperience=req.body.yearsOfExperience,
+    editStudents.id=req.body.id,
+console.log(editStudents)
+console.log(req.body)
+    res.send(students)
+})
+
+// delete
+
+
+app.delete("/students/:id",(req,res)=>{
+    const {id}=req.params
+    const deleteStudents=students.filter((stud)=>stud.id != id)
+    const delstudents = deleteStudents
+    try {
+        console.log("deleted succesfully")
+    } catch (error) {
+        console.log("error occcured")
+    }
+    res.send(delstudents)
+
 
 })
 
