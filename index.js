@@ -1,37 +1,41 @@
-const {MongoClient} =require("mongodb")
-const express = require("express");
+import { MongoClient } from "mongodb";
+import express from "express";
+import Obj from "mongodb"
 // invoke that server as a app
-const app =express();
-// const PORT =9000;
-const path =require("path");
-const fs =require("fs")
+import dotenv from "dotenv"
 
 
-const currentDir=path.join(__dirname,"express");
-console.log(currentDir)
-const content ="hi i have created current directory file"
-fs.writeFile(`${currentDir}/express.txt`, content,(err)=>{
-    try {
-        console.log("succesfully file created")
-    } catch (error) {
-     console.log("file not created")   
-    }
-}
-)
+dotenv.config()
+const app = express();
+var ObjectId=Obj.ObjectId
+
+
+
+// console.log(path.join(__dirname,"express"))
+// const currentDir=path.join(__dirname,"express");
+// console.log(currentDir)
+// const content ="hi i have created current directory file"
+// fs.writeFile(`${currentDir}/express.txt`, content,(err)=>{
+//     try {
+//         console.log("succesfully file created")
+//     } catch (error) {
+//      console.log("file not created")   
+//     }
+// }
+// )
 
 // mongo db connection string
-const MONGO_URL = "mongodb://127.0.0.1:27017/guvi"
-const client =new MongoClient(MONGO_URL)  
-// const dbName = "guvi";
+
+const MONGO_URL = process.env.MONGO_URL
+
 async  function createConnection(){
- 
+    const client =new MongoClient(MONGO_URL)  
  await client.connect();
  console.log("mongodb is succesfully connected")
-//  const db = client.db(dbName);
-//  const collection = db.collection('guvi');
+
  return client;
 }
-createConnection()
+export const client =await createConnection()
 .then(()=>console.log("success"))
 .catch(()=>console.log("error"))
 
@@ -44,39 +48,6 @@ app.use(express.json());
 app.get("/static",(req,res)=>{
     res.sendFile(path.join(__dirname,"express/express.txt"))
 })
-
-// const students =[
-//     {
-//         "name": "Narasimman",
-//         "batch": "B42wd",
-//         "gender": "male",
-//         "yearsOfExperience": "1",
-//         "id": "1"
-//        },
-//        {
-//         "name": "raja",
-//         "batch": "B42wd",
-//         "gender": "male",
-//         "yearsOfExperience": "1",
-//         "id": "2"
-//        },
-//        {
-//         "name": "rathnam",
-//         "batch": "B42wd",
-//         "gender": "male",
-//         "yearsOfExperience": "1",
-//         "id": "3"
-//        },
-//        {
-//         "name": "sandya",
-//         "batch": "B42wd",
-//         "gender": "female",
-//         "yearsOfExperience": "1",
-//         "id": "4"
-//        }
-
-
-// ]
 
 // example for get
 
@@ -91,30 +62,21 @@ res.send("hello i am start the server")
 
 app.get("/students/:id",async(req,res)=>{
     const {id}=req.params;
-    console.log(id);
+  
     console.log(req.params)
     // use find key word instead of filter to remove string
-  const studentsData = await (await client)
-  .db(guvi)
-  .collection(students)
-  .find({id :(_id)})
-    res.status(200).json(studentsData)
+  const students =await client
+  .db("guvi")
+  .collection("students")
+  .findOne({_id:new ObjectId(id)})
+    res.status(200).json(students)
 })
 
 // ------------------------------------------------------------
 
-// to get all datas
 
-// app.get("/all/students", async (req,res)=>{
-//     const studentsData = await (await client)
-   
-//     .db("guvi")
-//     .collection("guvi")
-//     .find()
-//     .toArray()
-// res.status(200).json(studentsData)
 
-// })
+
 
 
 // --------------------------------------------------------------
@@ -135,12 +97,7 @@ app.get("/students",async (req,res)=>{
     .toArray()
     // status code 200= ok
 res.status(200).json(studentsData)
-    // const {name}=req.query
-    // console.log(req.query)
-    // const selected1=students .find((stud)=>stud.name == name) 
-    // // const selected=students.filter((studs)=>studs.gender == gender)   
-    // res.send(selected1)
-    // res.send(selected)
+  
 })
 // post request
 
@@ -157,36 +114,57 @@ res.status(201).send(result)
 
 })
 
+app.post("/students/many",async (req,res)=>{
+    const newData2 =req.body
+const result2 = await (await client)
+.db("guvi")
+.collection("students")
+.insertMany(newData2)
+res.status(201).send(result2)
+
+
+})
 // put request
 
 // to update a data
 
-app.put("/students/:id",(req,res)=>{
+app.put("/students/:id",async (req,res)=>{
     const {id}=req.params
-    const editStudents=students.find((stud)=>stud.id === id)
-    editStudents.name=req.body.name,
-    editStudents.batch= req.body.batch,
-    editStudents.gender=req.body.gender,
-    editStudents.yearsOfExperience=req.body.yearsOfExperience,
-    editStudents.id=req.body.id,
-console.log(editStudents)
-console.log(req.body)
-    res.send(students)
+    console.log(req.query)
+    const updateStudents = req.body
+    const result = await (await client)
+    .db("guvi")
+    .collection("students")
+    .updateOne(
+        {_id:new ObjectId(id)},
+        {$set:updateStudents}
+    )
+    res.status(200).send(result)
+
+
+//     const editStudents=students.find((stud)=>stud.id === id)
+//     editStudents.name=req.body.name,
+//     editStudents.batch= req.body.batch,
+//     editStudents.gender=req.body.gender,
+//     editStudents.yearsOfExperience=req.body.yearsOfExperience,
+//     editStudents.id=req.body.id,
+// console.log(editStudents)
+// console.log(req.body)
+//     res.send(students)
 })
 
 // delete
 
 
-app.delete("/students/:id",(req,res)=>{
+app.delete("/students/:id",async(req,res)=>{
     const {id}=req.params
-    const deleteStudents=students.filter((stud)=>stud.id != id)
-    const delstudents = deleteStudents
-    try {
-        console.log("deleted succesfully")
-    } catch (error) {
-        console.log("error occcured")
-    }
-    res.send(delstudents)
+    console.log(req.params)
+   const deleteStudents =await client
+   .db("guvi")
+   .collection("students")
+   .deleteOne({_id:new ObjectId(id)})
+   res.status(201).send(deleteStudents)
+
 
 
 })
