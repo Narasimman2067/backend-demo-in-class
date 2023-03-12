@@ -11,6 +11,7 @@ dotenv.config({path: "./vars/.env"})
 // create connection for mongo_url
 
 const MONGO_URL = process.env.MONGO_URL
+
 async  function createConnection(){
 const client =new MongoClient(MONGO_URL)  
  await client.connect();
