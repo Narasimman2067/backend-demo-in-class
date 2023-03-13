@@ -3,8 +3,8 @@ import { client } from "../db.js";
 
 export function deleteOneStudents(id){
     return client
-    .db("guvi")
- .collection("students")
+    .db("zen")
+ .collection("classes")
  .deleteOne({_id:new ObjectId(id)})
 
 }

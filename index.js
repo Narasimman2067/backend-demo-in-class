@@ -1,6 +1,6 @@
 import express from "express";
 import { studentsRouter } from "./routes/student.js";
-
+import cors from "cors"
 
 
 
@@ -18,6 +18,8 @@ app.use(express.json());
 app.get("/static",(req,res)=>{
     res.sendFile(path.join(__dirname,"express/express.txt"))
 })
+
+app.use(cors())
 
 // use that exported routes
 

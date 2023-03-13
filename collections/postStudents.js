@@ -3,8 +3,8 @@ import { client } from "../db.js";
 
 export function addStudents(data){
     return client
-    .db("guvi")
-.collection("students")
+    .db("zen")
+.collection("classes")
 .insertOne(data)
 
 }
@@ -12,8 +12,8 @@ export function addStudents(data){
 export function addManyStudents(data)
 {
     return client
-    .db("guvi")
-    .collection("students")
+    .db("zen")
+    .collection("classes")
     .insertMany(data)
 
 }
