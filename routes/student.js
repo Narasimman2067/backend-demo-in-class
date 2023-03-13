@@ -116,11 +116,11 @@ router.delete("/:id", async (req, res) => {
 try {
   
   const deleteStudents = await deleteOneStudents(id);
-  if(!deleteStudents){
-    res.status(404).json({data:"no content provided"})
-    return
-  }
-    res.status(200).send({data:"data deleted successfully"});
+  // if(id!=deleteStudents){
+  //   res.status(404).json({data:"no content provided"})
+  //   return
+  // }
+    res.status(200).send(deleteStudents);
   } catch (error) {
   res.status(500).json({error:"error while deleting"})
 }
