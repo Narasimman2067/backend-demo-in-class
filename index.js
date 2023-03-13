@@ -19,6 +19,11 @@ app.get("/static",(req,res)=>{
     res.sendFile(path.join(__dirname,"express/express.txt"))
 })
 
+app.get("/",(req,res) =>{
+    // parameter any
+    res.send("hello i am start the server")
+    })
+
 app.use(cors())
 
 // use that exported routes
