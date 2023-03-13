@@ -1,6 +1,6 @@
 {
     "version":2,
-    "name":"students-data",
+    "name":"students-album",
     "builds":[
         {
             "src":"./index.js",
